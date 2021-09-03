@@ -326,8 +326,12 @@ class BuildahContainerDiff:
         return self._diff_update_and_compare('annotation', before, after)
 
     def diffparam_cap_add(self):
-        before = (self.info['defaultcapabilities']
-                  + [cap for cap in self.info['addcapabilities'] if cap not in self.info['dropcapabilities']])
+        # older buildah has defaultcapabilities etc.
+        if self.info['capabilities'] is None:
+            before = (self.info['defaultcapabilities']
+                      + [cap for cap in self.info['addcapabilities'] if cap not in self.info['dropcapabilities']])
+        else:
+            before = self.info['capabilities']
         before = [i.lower() for i in before]
         after = []
         if self.module_params['cap_add'] is not None:
@@ -340,8 +344,12 @@ class BuildahContainerDiff:
         return self._diff_update_and_compare('cap_add', before, after)
 
     def diffparam_cap_drop(self):
-        before = (self.info['defaultcapabilities']
-                  + [cap for cap in self.info['addcapabilities'] if cap not in self.info['dropcapabilities']])
+        # older buildah has defaultcapabilities etc.
+        if self.info['capabilities'] is None:
+            before = (self.info['defaultcapabilities']
+                      + [cap for cap in self.info['addcapabilities'] if cap not in self.info['dropcapabilities']])
+        else:
+            before = (self.info['capabilities'])
         before = [i.lower() for i in before]
         after = before[:]
         if self.module_params['cap_drop'] is not None:

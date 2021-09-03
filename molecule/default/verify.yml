@@ -25,7 +25,7 @@
       assert:
         that:
         - not _rocky_container.changed|bool
-  
+
   - block:
 
     - name: a preexisting rocky 8 container is absent

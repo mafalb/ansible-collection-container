@@ -1,17 +1,17 @@
-# Ansible Collection - mafalb.containers
+# Ansible Collection - mafalb.container
 
 
 |||
 |---|---|
-|master|![master branch](https://github.com/mafalb/ansible-collection-containers/workflows/CI/badge.svg?branch=master)|
-|dev|![dev branch](https://github.com/mafalb/ansible-collection-containers/workflows/CI/badge.svg?branch=dev)|
+|master|![master branch](https://github.com/mafalb/ansible-collection-container/workflows/CI/badge.svg?branch=master)|
+|dev|![dev branch](https://github.com/mafalb/ansible-collection-container/workflows/CI/badge.svg?branch=dev)|
 
 
-Ansible collection mafalb.containers
+Ansible collection mafalb.container
 
-## Roles
+## Modules
 
-### [mafalb.containers.roleX](roles/roleX }}/README.md)
+### mafalb.container.buildah_container
 
 ## License
 

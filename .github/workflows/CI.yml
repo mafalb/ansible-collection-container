@@ -174,14 +174,14 @@ jobs:
  
     defaults:
       run:
-        working-directory: ansible_collections/mafalb/containers
+        working-directory: ansible_collections/mafalb/container
 
     steps:
 
-    - name: checkout collection mafalb.containers
+    - name: checkout collection mafalb.container
       uses: actions/checkout@v2
       with:
-        path: ansible_collections/mafalb/containers
+        path: ansible_collections/mafalb/container
 
 
     - name: install molecule

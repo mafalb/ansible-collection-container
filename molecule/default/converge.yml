@@ -2,10 +2,20 @@
 ---
 
 - name: converge containers
-  hosts: all,!infrastructure_group
+  hosts: localhost
+  connection: local
 
-  environment:
-    http_proxy: http://ci-proxy:3128
-    https_proxy: http://ci-proxy:3128
+  tasks:
+
+  - name: a rocky 8 container is present
+    mafalb.container.buildah_container:
+      name: rocky_container
+      image: quay.io/rockylinux/rockylinux:8
+      state: present
+
+  - name: a preexisting rocky 8 container is absent
+    mafalb.container.buildah_container:
+      name: preexisting_rocky_container
+      state: absent
 
 ...

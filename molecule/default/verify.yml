@@ -2,16 +2,41 @@
 ---
 
 - name: verify
-  hosts: all,!infrastructure_group
-
-  environment:
-    http_proxy: http://ci-proxy:3128
-    https_proxy: http://ci-proxy:3128
+  hosts: localhost
+  connection: local
 
   tasks:
 
-  - name: Example assertion
-    assert:
-      that: true
+  - block:
+
+    - name: the rocky 8 container is absent
+      mafalb.container.buildah_container:
+        name: rocky_container
+        state: absent
+      register: _rocky_container
+
+    - name: the rocky 8 container is absent
+      mafalb.container.buildah_container:
+        name: rocky_container
+        state: absent
+      register: _rocky_container
+
+    - name: assert that rocky_container was present
+      assert:
+        that:
+        - not _rocky_container.changed|bool
+  
+  - block:
+
+    - name: a preexisting rocky 8 container is absent
+      mafalb.container.buildah_container:
+        name: preexisting_rocky_container
+        state: absent
+      register: _preexisting_rocky_container
+
+    - name: assert that rocky_container was present
+      assert:
+        that:
+        - not _preexisting_rocky_container.changed|bool
 
 ...

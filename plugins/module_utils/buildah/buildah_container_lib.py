@@ -10,7 +10,7 @@ import json  # noqa: F402
 from distutils.version import LooseVersion  # noqa: F402
 
 from ansible.module_utils._text import to_bytes, to_native  # noqa: F402
-from ansible_collections.mafalb.containerimages.plugins.module_utils.podman.common import lower_keys
+from ansible_collections.mafalb.container.plugins.module_utils.podman.common import lower_keys
 
 __metaclass__ = type
 
@@ -269,10 +269,6 @@ class BuildahModuleParams:
     def addparam_env_file(self, c):
         return c + ['--env-file', self.params['env_file']]
 
-    def addparam_env_host(self, c):
-        self.check_version('--env-host', minv='1.5.0')
-        return c + ['--env-host=%s' % self.params['env_host']]
-
     # Add your own args for buildah command
     def addparam_cmd_args(self, c):
         return c + self.params['cmd_args']
@@ -323,36 +319,15 @@ class BuildahContainerDiff:
         return False
 
     def diffparam_annotation(self):
-        before = self.info['config']['annotations'] or {}
+        before = self.info['imageannotations'] or {}
         after = before.copy()
         if self.module_params['annotation'] is not None:
             after.update(self.params['annotation'])
         return self._diff_update_and_compare('annotation', before, after)
 
-    def diffparam_env_host(self):
-        # It's impossible to get from inspest, recreate it if not default
-        before = False
-        after = self.params['env_host']
-        return self._diff_update_and_compare('env_host', before, after)
-
-    def diffparam_blkio_weight(self):
-        before = self.info['hostconfig']['blkioweight']
-        after = self.params['blkio_weight']
-        return self._diff_update_and_compare('blkio_weight', before, after)
-
-    def diffparam_blkio_weight_device(self):
-        before = self.info['hostconfig']['blkioweightdevice']
-        if before == [] and self.module_params['blkio_weight_device'] is None:
-            after = []
-        else:
-            after = self.params['blkio_weight_device']
-        return self._diff_update_and_compare('blkio_weight_device', before, after)
-
     def diffparam_cap_add(self):
-        before = (self.info['DefaultCapabilities']
-                  + self.info['AddCapabilities']
-                  - self.info['DropCapabilities']
-                  ) or []
+        before = (self.info['defaultcapabilities']
+                  + [cap for cap in self.info['addcapabilities'] if cap not in self.info['dropcapabilities']])
         before = [i.lower() for i in before]
         after = []
         if self.module_params['cap_add'] is not None:
@@ -365,10 +340,8 @@ class BuildahContainerDiff:
         return self._diff_update_and_compare('cap_add', before, after)
 
     def diffparam_cap_drop(self):
-        before = (self.info['DefaultCapabilities']
-                  + self.info['AddCapabilities']
-                  - self.info['DropCapabilities']
-                  ) or []
+        before = (self.info['defaultcapabilities']
+                  + [cap for cap in self.info['addcapabilities'] if cap not in self.info['dropcapabilities']])
         before = [i.lower() for i in before]
         after = before[:]
         if self.module_params['cap_drop'] is not None:
@@ -379,31 +352,6 @@ class BuildahContainerDiff:
                     after.remove(cap)
         before, after = sorted(list(set(before))), sorted(list(set(after)))
         return self._diff_update_and_compare('cap_drop', before, after)
-
-    def diffparam_cgroup_parent(self):
-        before = self.info['hostconfig']['cgroupparent']
-        after = self.params['cgroup_parent']
-        if after is None:
-            after = before
-        return self._diff_update_and_compare('cgroup_parent', before, after)
-
-    def diffparam_cgroups(self):
-        # Cgroups output is not supported in all versions
-        if 'cgroups' in self.info['hostconfig']:
-            before = self.info['hostconfig']['cgroups']
-            after = self.params['cgroups']
-            return self._diff_update_and_compare('cgroups', before, after)
-        return False
-
-    def diffparam_cidfile(self):
-        before = self.info['hostconfig']['containeridfile']
-        after = self.params['cidfile']
-        labels = self.info['config']['labels'] or {}
-        # Ignore cidfile that is coming from systemd files
-        # https://github.com/containers/ansible-podman-collections/issues/276
-        if 'podman_systemd_unit' in labels:
-            after = before
-        return self._diff_update_and_compare('cidfile', before, after)
 
     # Limited idempotency, it can't guess default values
     def diffparam_env(self):

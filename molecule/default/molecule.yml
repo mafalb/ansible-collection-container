@@ -8,56 +8,16 @@ dependency:
     requirements-file: molecule/default/requirements.yml
 
 driver:
-
-  name: docker
-
+  name: delegated
+  options:
+    managed: true
+    login_cmd_template: 'podman exec -ti {instance} bash'
+    ansible_connection_options:
+      ansible_connection: local
 
 platforms:
-- name: ${CI_HOSTNAME-"ci-rocky8"}
-  image: ${CI_IMAGE:-"quay.io/rockylinux/rockylinux:8"}
-  command: /lib/systemd/systemd
-  network_mode: bridge
-  docker_networks:
-  - name: molecule-internal
-    internal: true
-  networks:
-  - name: molecule-internal
-  volumes:
-  - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  tmpfs:
-  - /tmp
-  - /run
-  - /run/lock
-  capabilities:
-  - SYS_ADMIN
-  privileged: ${CI_CONTAINER_PRIVILEGED:-false}
-  pre_build_image: ${CI_CONTAINER_PREBUILT:-false}
-  tty: true
-  groups:
-  - ci
-
-- name: ci-proxy
-  image: quay.io/centos/centos:8
-  command: /lib/systemd/systemd
-  network_mode: bridge
-  networks:
-  - name: molecule-external
-  - name: molecule-internal
-  volumes:
-  - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  tmpfs:
-  - /tmp
-  - /run
-  - /run/lock
-  capabilities:
-  - SYS_ADMIN
-  privileged: ${CI_CONTAINER_PRIVILEGED:-false}
-  pre_build_image: ${CI_CONTAINER_PREBUILT:-false}
-  tty: true
-  groups:
-  - infrastructure_group
-  - proxy_group
-
+- name: localhost
+  
 provisioner:
   name: ansible
   ansible_args:

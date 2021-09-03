@@ -90,14 +90,14 @@ jobs:
 
     defaults:
       run:
-        working-directory: ansible_collections/mafalb/containerimages
+        working-directory: ansible_collections/mafalb/container
 
     steps:
 
-    - name: checkout collection mafalb.containerimages
+    - name: checkout collection mafalb.container
       uses: actions/checkout@v2
       with:
-        path: ansible_collections/mafalb/containerimages
+        path: ansible_collections/mafalb/container
 
     - name: setup python
       uses: actions/setup-python@v2

@@ -7,7 +7,7 @@
 namespace: mafalb
 
 # The name of the collection. Has the same character restrictions as 'namespace'
-name: containers
+name: container
 
 # The version of the collection. Must be compatible with semantic versioning
 version: 0.0.1

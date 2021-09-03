@@ -149,13 +149,13 @@ options:
 
 EXAMPLES = r"""
 - name: Create a buildah container
-  mafalb.containerimages.buildah_container:
+  mafalb.container.buildah_container:
     name: ci-rocky8
     image: quay.io/rockylinux/rockylinux:8
     state: present
 
 - name: Remove a buildah container
-  mafalb.containerimages.buildah_container:
+  mafalb.container.buildah_container:
     name: ci-rocky8
     state: absent
 """
@@ -174,8 +174,8 @@ container:
 """
 
 from ansible.module_utils.basic import AnsibleModule  # noqa: E402
-from ansible_collections.mafalb.containerimages.plugins.module_utils.buildah.buildah_container_lib import BuildahManager  # noqa: E402
-from ansible_collections.mafalb.containerimages.plugins.module_utils.buildah.buildah_container_lib import ARGUMENTS_SPEC_CONTAINER  # noqa: E402
+from ansible_collections.mafalb.container.plugins.module_utils.buildah.buildah_container_lib import BuildahManager  # noqa: E402
+from ansible_collections.mafalb.container.plugins.module_utils.buildah.buildah_container_lib import ARGUMENTS_SPEC_CONTAINER  # noqa: E402
 
 
 def main():

@@ -124,7 +124,7 @@ jobs:
         . ~/virtualenv/bin/activate
         pip install wheel
         pip install -U pip setuptools
-        pip install 'ansible${{ matrix.ansible_pip_version }} ansible-lint${{ matrix.ansible-lint_version }} cryptography${{ matrix.cryptography_version }} flake8<3.9  pylint  pycodestyle<2.7'
+        pip install 'ansible${{ matrix.ansible_pip_version }}' 'ansible-lint${{ matrix.ansible-lint_version }}' 'cryptography${{ matrix.cryptography_version }}' 'flake8<3.9'  pylint  'pycodestyle<2.7'
 
     - name: check ansible version
       run: |

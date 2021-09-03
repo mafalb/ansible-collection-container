@@ -26,42 +26,57 @@ jobs:
 
         include:
 
-        - ansible_version: '<2.10'
+        - ansible_version: '2.9'
           python-version: 2.7
           ansible-lint_version: '==4.*'
 
-        - ansible_version: '<2.10'
+        - ansible_version: '2.9'
           python-version: 3.5
           ansible-lint_version: '<5'
           cryptography_version: '<3.1'
 
-        - ansible_version: '<2.10'
+        - ansible_version: '2.9'
           python-version: 3.6
 
-        - ansible_version: '<2.10'
+        - ansible_version: '2.9'
           python-version: 3.7
 
-        - ansible_version: '<2.10'
+        - ansible_version: '2.9'
           python-version: 3.8
 
 
-        - ansible_version: '<4'
+        - ansible_version: '2.10'
+          ansible_pip_version: '<4'
           python-version: 3.6
 
-        - ansible_version: '<4'
+        - ansible_version: '2.10'
+          ansible_pip_version: '<4'
           python-version: 3.7
 
-        - ansible_version: '<4'
+        - ansible_version: '2.10'
+          ansible_pip_version: '<4'
           python-version: 3.8
 
-        - ansible_version: '<4'
+        - ansible_version: '2.10'
+          ansible_pip_version: '<4'
           python-version: 3.9
 
 
-        - python-version: 3.6
-        - python-version: 3.7
-        - python-version: 3.8
-        - python-version: 3.9
+        - ansible_version: '2.11'
+          ansible_pip_version: '<5'
+          python-version: 3.6
+
+        - ansible_version: '2.11'
+          ansible_pip_version: '<5'
+          python-version: 3.7
+
+        - ansible_version: '2.11'
+          ansible_pip_version: '<5'
+          python-version: 3.8
+
+        - ansible_version: '2.11'
+          ansible_pip_version: '<5'
+          python-version: 3.9
 
     env:
       PY_COLORS: 1
@@ -104,7 +119,7 @@ jobs:
         . ~/virtualenv/bin/activate
         pip install wheel
         pip install -U pip setuptools
-        pip install "ansible==${{ matrix.ansible_version }}.*" ansible-lint${{ matrix.ansible-lint_version }} 'cryptography${{ matrix.cryptography_version }}' 'flake8<3.9' pylint 'pycodestyle<2.7'
+        pip install "ansible==${{ matrix.ansible_pip_version }}.*" ansible-lint${{ matrix.ansible-lint_version }} 'cryptography${{ matrix.cryptography_version }}' 'flake8<3.9' pylint 'pycodestyle<2.7'
 
     - name: check ansible version
       run: |

@@ -183,6 +183,8 @@ jobs:
       with:
         path: ansible_collections/mafalb/container
 
+    - name: run integration tests
+      run: ansible-test integration --color
 
     - name: install molecule
       run: |

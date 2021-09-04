@@ -61,8 +61,6 @@
         state: present
       register: image2
 
-    - debug: var=image2
-
     - name: Check output is correct
       assert:
         that:

@@ -183,9 +183,6 @@ jobs:
       with:
         path: ansible_collections/mafalb/container
 
-    - name: run integration tests
-      run: ansible-test integration --color
-
     - name: install molecule
       run: |
         ansible-galaxy collection install mafalb.ansible
@@ -197,6 +194,11 @@ jobs:
       run: |
         source ~/.virtualenvs/molecule/bin/activate
         ansible --version | grep "^ansible.* ${{ matrix.ansible_version }}"
+
+    - name: run integration tests
+      run: |
+        source ~/.virtualenvs/molecule/bin/activate
+        ansible-test integration --color
 
     - name: molecule tests
       run: |

@@ -12,6 +12,7 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 module: buildah_container
 author:
+  - "Sagi Shnaidman (@sshnaidm)"
   - "Markus Falb (@mafalb)"
 version_added: '0.0.1'
 short_description: Manage buildah containers
@@ -44,11 +45,13 @@ options:
         re-created with the requested config. Image version will be taken into
         account when comparing configuration. Use the recreate option to force
         the re-creation of the matching container.
+      - I(created) - same as I(present)
     type: str
     default: present
     choices:
       - absent
       - present
+      - created
   image:
     description:
       - Repository path (or image name) and tag used to create the container.
@@ -165,12 +168,180 @@ container:
     description:
       - Facts representing the current state of the container. Matches the
         buildah inspect output.
+      - Note that facts are part of the registered vars since Ansible 2.8. For
+        compatibility reasons, the facts
+        are also accessible directly as C(buildah_container). Note that the
+        returned fact will be removed in Ansible 2.12.
       - Empty if C(state) is I(absent).
     returned: always
     type: dict
     sample: '{
-      ...
-    }'
+        "container": {
+            "AddCapabilities": [],
+            "CNIConfigDir": "/etc/cni/net.d",
+            "CNIPluginPath": "/usr/libexec/cni:/opt/cni/bin",
+            "Config": "{\"architecture\":\"amd64\", ...}",
+            "ConfigureNetwork": "NetworkDefault",
+            "Container": "container2",
+            "ContainerID": "...",
+            "DefaultCapabilities": [
+                "CAP_AUDIT_WRITE",
+                ...
+            ],
+            "DefaultMountsFilePath": "",
+            "Devices": [],
+            "Docker": {
+                "architecture": "amd64",
+                "config": {
+                    "ArgsEscaped": true,
+                    "AttachStderr": false,
+                    "AttachStdin": false,
+                    "AttachStdout": false,
+                    "Cmd": [
+                        "/bin/sh"
+                    ],
+                    "Domainname": "",
+                    "Entrypoint": null,
+                    "Env": [
+                        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                    ],
+                    "Hostname": "",
+                    "Image": "sha256:...",
+                    "Labels": null,
+                    "OnBuild": [],
+                    "OpenStdin": false,
+                    "StdinOnce": false,
+                    "Tty": false,
+                    "User": "",
+                    "Volumes": null,
+                    "WorkingDir": ""
+                },
+                "container": "...",
+                "container_config": {
+                    "ArgsEscaped": true,
+                    "AttachStderr": false,
+                    "AttachStdin": false,
+                    "AttachStdout": false,
+                    "Cmd": [
+                        "/bin/sh"
+                    ],
+                    "Domainname": "",
+                    "Entrypoint": null,
+                    "Env": [
+                        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                    ],
+                    "Hostname": "",
+                    "Image": "sha256:...",
+                    "Labels": null,
+                    "OnBuild": [],
+                    "OpenStdin": false,
+                    "StdinOnce": false,
+                    "Tty": false,
+                    "User": "",
+                    "Volumes": null,
+                    "WorkingDir": ""
+                },
+                "created": "2019-03-07T22:19:53.447205048Z",
+                "history": [
+                    ...
+                ],
+                "os": "linux",
+                "rootfs": {
+                    "diff_ids": [
+                        "sha256:..."
+                    ],
+                    "type": "layers"
+                }
+            },
+            "DropCapabilities": [],
+            "FromImage": "...",
+            "FromImageDigest": "sha256:...",
+            "FromImageID": "...",
+            "History": [
+                ...
+            ],
+            "IDMappingOptions": {
+                "GIDMap": [],
+                "HostGIDMapping": true,
+                "HostUIDMapping": true,
+                "UIDMap": []
+            },
+            "ImageAnnotations": null,
+            "ImageCreatedBy": "",
+            "Isolation": "IsolationOCIRootless",
+            "Manifest": "{\n   \"schemaVersion\": 2,\n   ...}",
+            "MountLabel": "system_u:object_r:svirt_sandbox_file_t:s0:c295,c943",
+            "MountPoint": "",
+            "NamespaceOptions": [
+                {
+                    "Host": true,
+                    "Name": "cgroup",
+                    "Path": ""
+                },
+                {
+                    "Host": false,
+                    "Name": "ipc",
+                    "Path": ""
+                },
+                {
+                    "Host": false,
+                    "Name": "mount",
+                    "Path": ""
+                },
+                {
+                    "Host": true,
+                    "Name": "network",
+                    "Path": ""
+                },
+                {
+                    "Host": false,
+                    "Name": "pid",
+                    "Path": ""
+                },
+                {
+                    "Host": true,
+                    "Name": "user",
+                    "Path": ""
+                },
+                {
+                    "Host": false,
+                    "Name": "uts",
+                    "Path": ""
+                }
+            ],
+            "OCIv1": {
+                "architecture": "amd64",
+                "config": {
+                    "Cmd": [
+                        "/bin/sh"
+                    ],
+                    "Env": [
+                        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                    ]
+                },
+                "created": "2019-03-07T22:19:53.447205048Z",
+                "history": [
+                    ...
+                ],
+                "os": "linux",
+                "rootfs": {
+                    "diff_ids": [
+                        "sha256:..."
+                    ],
+                    "type": "layers"
+                }
+            },
+            "ProcessLabel": "system_u:system_r:svirt_lxc_net_t:s0:c295,c943",
+            "Type": "buildah 0.0.1"
+        },
+        "failed": false,
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "container2\n",
+        "stdout_lines": [
+            "container2"
+        ]
+    }
 """
 
 from ansible.module_utils.basic import AnsibleModule  # noqa: E402
@@ -185,9 +356,9 @@ def main():
     )
 
     # work on input vars
-    if (module.params['state'] in ['present']
+    if (module.params['state'] in ['present','created']
             and not module.params['image']):
-        module.fail_json(msg="State '%s' required image to be configured!" %
+        module.fail_json(msg="State '%s' requires image to be configured!" %
                              module.params['state'])
 
     results = BuildahManager(module, module.params).execute()

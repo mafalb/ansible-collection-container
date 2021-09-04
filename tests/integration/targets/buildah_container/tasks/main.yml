@@ -1,0 +1,85 @@
+---
+
+- name: Test buildah_container
+  block:
+    - name: Delete all container leftovers from tests
+      mafalb.container.buildah_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "container"
+        - "container2"
+
+    - name: Test no image with default action
+      mafalb.container.buildah_container:
+        name: container
+      ignore_errors: true
+      register: no_image
+
+    - name: Test no image with state 'started'
+      mafalb.container.buildah_container:
+        name: container
+        state: created
+      ignore_errors: true
+      register: no_image1
+
+    - name: Test no image with state 'present'
+      mafalb.container.buildah_container:
+        name: container
+        state: present
+      ignore_errors: true
+      register: no_image2
+
+    - name: Check no image
+      assert:
+        that:
+          - no_image is failed
+          - no_image1 is failed
+          - no_image2 is failed
+          - no_image.msg == "State 'present' requires image to be configured!"
+          - no_image1.msg == "State 'created' requires image to be configured!"
+          - no_image2.msg == "State 'present' requires image to be configured!"
+        fail_msg: No image test failed!
+        success_msg: No image test passed!
+
+    - name: Ensure image doesn't exist
+      podman_image:
+        name: alpine:3.7
+        state: absent
+
+    - name: Check pulling image
+      mafalb.container.buildah_container:
+        name: container
+        image: alpine:3.7
+        state: present
+      register: image
+
+    - name: Check using already pulled image
+      mafalb.container.buildah_container:
+        name: container2
+        image: alpine:3.7
+        state: present
+      register: image2
+
+    - name: Check output is correct
+      assert:
+        that:
+          - image is changed
+          - image.container is defined
+          - image.container['OCIv1']['created']
+          - image2 is changed
+          - image2.container is defined
+          - image2.container['OCIv1']['created']
+        fail_msg: Pulling image test failed!
+        success_msg: Pulling image test passed!
+
+  always:
+    - name: Delete all container leftovers from tests
+      mafalb.container.buildah_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "container"
+        - "container2"
+
+...

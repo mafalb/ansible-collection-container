@@ -19,7 +19,7 @@ ARGUMENTS_SPEC_CONTAINER = dict(
     executable=dict(default='buildah', type='str'),
     podman_executable=dict(default='podman', type='str'),
     state=dict(type='str', default='present', choices=[
-        'absent', 'present','created']),
+        'absent', 'present', 'created']),
     image=dict(type='str'),
     annotation=dict(type='dict'),
     authfile=dict(type='path'),

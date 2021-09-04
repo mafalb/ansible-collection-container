@@ -341,7 +341,7 @@ container:
         "stdout_lines": [
             "container2"
         ]
-    }
+    }'
 """
 
 from ansible.module_utils.basic import AnsibleModule  # noqa: E402
@@ -356,7 +356,7 @@ def main():
     )
 
     # work on input vars
-    if (module.params['state'] in ['present','created']
+    if (module.params['state'] in ['present', 'created']
             and not module.params['image']):
         module.fail_json(msg="State '%s' requires image to be configured!" %
                              module.params['state'])

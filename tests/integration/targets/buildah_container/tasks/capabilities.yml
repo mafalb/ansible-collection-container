@@ -71,12 +71,13 @@
             'CAP_SYS_ADMIN' not in image.container['AddCapabilities']|default([])"
         success_msg: CAP_SYS_ADMIN capability is not present
 
+    # SYS_ADMIN instead of CAP_SYS_ADMIN
     - name: Idempotency
       mafalb.container.buildah_container:
         name: container
         image: alpine:3.7
         cap_drop:
-        - CAP_SYS_ADMIN
+        - SYS_ADMIN
       register: image
 
     - name: Check Idempotency
@@ -109,35 +110,42 @@
         success_msg: idempotency test successful
         fail_msg: idempotency test failed
 
-    # the following should not change
-    - name: cap_drop has precendence over cap_add
-      mafalb.container.buildah_container:
-        name: container
-        image: alpine:3.7
-        cap_add:
-        - CAP_SYS_ADMIN
-        cap_drop:
-        - CAP_SYS_ADMIN
-      register: image
+    - name: cap_drop and cap_add at the same time
+      block:
+      - name: cap_drop has precendence over cap_add
+        mafalb.container.buildah_container:
+          name: container
+          image: alpine:3.7
+          cap_add:
+          - CAP_SYS_ADMIN
+          cap_drop:
+          - CAP_SYS_ADMIN
+        register: image
+      rescue:
+      - name: debug
+        debug:
+          var: image
+      - name: Check for correct error message
+        assert:
+          that:
+            image.msg is search("cannot be dropped and added!")
 
-    - name: Check idempotency
+    - name: Check that it failed
       assert:
         that:
           - image is not changed
-          - image.actions == []
-          - image.container is defined
-          - "'CAP_SYS_ADMIN' not in image.container['Capabilities']|default([]) and
-            'CAP_SYS_ADMIN' not in image.container['AddCapabilities']|default([])"
-        success_msg: idempotency test successful
-        fail_msg: idemotency test failed
+          - image is failed
+        success_msg: container failed
+        fail_msg: container was successful
 
-    # todo: SYS_ADMIN without CAP_
+    # todo: SYS_ADMIN without CAP_ !
+    # capabilities instead of cap_add !
     - name: container with additional capabilities is created (alias)
       mafalb.container.buildah_container:
         name: container
         image: alpine:3.7
         capabilities:
-        - CAP_SYS_ADMIN
+        - SYS_ADMIN
       register: image
 
     - name: Check container with additional capabilities (alias)

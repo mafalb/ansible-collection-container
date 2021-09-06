@@ -369,6 +369,24 @@ def main():
         module.fail_json(msg="State '%s' requires image to be configured!" %
                              module.params['state'])
 
+    # older buildah needs cap_ prefix in capability names
+    if module.params['cap_add']:
+        module.params['cap_add'] = [cap.upper() if cap.lower().startswith('cap_')
+                                    else 'CAP_' + cap.upper()
+                                    for cap in module.params['cap_add']]
+    if module.params['cap_drop']:
+        module.params['cap_drop'] = [cap.upper() if cap.lower().startswith('cap_')
+                                    else 'CAP_' + cap.upper()
+                                    for cap in module.params['cap_drop']]
+
+    # newer buildah complains if a capability is both added and
+    # dropped. Don't let that happen.
+    if module.params['cap_add'] and module.params['cap_drop']:
+        for cap in module.params['cap_add']:
+            if cap in module.params['cap_drop']:
+                module.fail_json(msg="capability '%s' cannot be dropped"
+                                 " and added!" % cap)
+
     results = BuildahManager(module, module.params).execute()
     module.exit_json(**results)
 

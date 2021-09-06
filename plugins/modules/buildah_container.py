@@ -376,8 +376,8 @@ def main():
                                     for cap in module.params['cap_add']]
     if module.params['cap_drop']:
         module.params['cap_drop'] = [cap.upper() if cap.lower().startswith('cap_')
-                                    else 'CAP_' + cap.upper()
-                                    for cap in module.params['cap_drop']]
+                                     else 'CAP_' + cap.upper()
+                                     for cap in module.params['cap_drop']]
 
     # newer buildah complains if a capability is both added and
     # dropped. Don't let that happen.

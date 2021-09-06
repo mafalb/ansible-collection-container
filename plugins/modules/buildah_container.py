@@ -164,194 +164,192 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
-"image": {
-    "actions": [
-        "recreated container"
-    ],
-    "buildah_actions": [
-        "buildah rm container",
-        "buildah --name container --cap-drop CAP_SYS_ADMIN from hello-world"
-    ],
-    "changed": true,
-    "container":
-        description:
-          - Facts representing the current state of the container. Matches the
-            buildah inspect output.
-          - Note that facts are part of the registered vars since Ansible 2.8. For
-            compatibility reasons, the facts
-            are also accessible directly as C(buildah_container). Note that the
-            returned fact will be removed in Ansible 2.12.
-          - Empty if C(state) is I(absent).
-        returned: always
-        type: dict
-        sample: '{
-            "container": {
-                "AddCapabilities": [],
-                "CNIConfigDir": "/etc/cni/net.d",
-                "CNIPluginPath": "/usr/libexec/cni:/opt/cni/bin",
-                "Config": "{\"architecture\":\"amd64\", ...}",
-                "ConfigureNetwork": "NetworkDefault",
-                "Container": "container2",
-                "ContainerID": "...",
-                "DefaultCapabilities": [
-                    "CAP_AUDIT_WRITE",
+container:
+    description:
+      - Facts representing the current state of the container. Matches the
+        buildah inspect output.
+      - Note that facts are part of the registered vars since Ansible 2.8. For
+        compatibility reasons, the facts
+        are also accessible directly as C(buildah_container). Note that the
+        returned fact will be removed in Ansible 2.12.
+      - Empty if C(state) is I(absent).
+    returned: always
+    type: dict
+    sample: '{
+        "actions": [
+            "recreated container"
+        ],
+        "buildah_actions": [
+            "buildah rm container",
+            "buildah --name container --cap-drop CAP_SYS_ADMIN from hello-world"
+        ],
+        "changed": true,
+        "container": {
+            "AddCapabilities": [],
+            "CNIConfigDir": "/etc/cni/net.d",
+            "CNIPluginPath": "/usr/libexec/cni:/opt/cni/bin",
+            "Config": "{\"architecture\":\"amd64\", ...}",
+            "ConfigureNetwork": "NetworkDefault",
+            "Container": "container2",
+            "ContainerID": "...",
+            "DefaultCapabilities": [
+                "CAP_AUDIT_WRITE",
+                ...
+            ],
+            "DefaultMountsFilePath": "",
+            "Devices": [],
+            "Docker": {
+                "architecture": "amd64",
+                "config": {
+                    "ArgsEscaped": true,
+                    "AttachStderr": false,
+                    "AttachStdin": false,
+                    "AttachStdout": false,
+                    "Cmd": [
+                        "/bin/sh"
+                    ],
+                    "Domainname": "",
+                    "Entrypoint": null,
+                    "Env": [
+                        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                    ],
+                    "Hostname": "",
+                    "Image": "sha256:...",
+                    "Labels": null,
+                    "OnBuild": [],
+                    "OpenStdin": false,
+                    "StdinOnce": false,
+                    "Tty": false,
+                    "User": "",
+                    "Volumes": null,
+                    "WorkingDir": ""
+                },
+                "container": "...",
+                "container_config": {
+                    "ArgsEscaped": true,
+                    "AttachStderr": false,
+                    "AttachStdin": false,
+                    "AttachStdout": false,
+                    "Cmd": [
+                        "/bin/sh"
+                    ],
+                    "Domainname": "",
+                    "Entrypoint": null,
+                    "Env": [
+                        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                    ],
+                    "Hostname": "",
+                    "Image": "sha256:...",
+                    "Labels": null,
+                    "OnBuild": [],
+                    "OpenStdin": false,
+                    "StdinOnce": false,
+                    "Tty": false,
+                    "User": "",
+                    "Volumes": null,
+                    "WorkingDir": ""
+                },
+                "created": "2019-03-07T22:19:53.447205048Z",
+                "history": [
                     ...
                 ],
-                "DefaultMountsFilePath": "",
-                "Devices": [],
-                "Docker": {
-                    "architecture": "amd64",
-                    "config": {
-                        "ArgsEscaped": true,
-                        "AttachStderr": false,
-                        "AttachStdin": false,
-                        "AttachStdout": false,
-                        "Cmd": [
-                            "/bin/sh"
-                        ],
-                        "Domainname": "",
-                        "Entrypoint": null,
-                        "Env": [
-                            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-                        ],
-                        "Hostname": "",
-                        "Image": "sha256:...",
-                        "Labels": null,
-                        "OnBuild": [],
-                        "OpenStdin": false,
-                        "StdinOnce": false,
-                        "Tty": false,
-                        "User": "",
-                        "Volumes": null,
-                        "WorkingDir": ""
-                    },
-                    "container": "...",
-                    "container_config": {
-                        "ArgsEscaped": true,
-                        "AttachStderr": false,
-                        "AttachStdin": false,
-                        "AttachStdout": false,
-                        "Cmd": [
-                            "/bin/sh"
-                        ],
-                        "Domainname": "",
-                        "Entrypoint": null,
-                        "Env": [
-                            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-                        ],
-                        "Hostname": "",
-                        "Image": "sha256:...",
-                        "Labels": null,
-                        "OnBuild": [],
-                        "OpenStdin": false,
-                        "StdinOnce": false,
-                        "Tty": false,
-                        "User": "",
-                        "Volumes": null,
-                        "WorkingDir": ""
-                    },
-                    "created": "2019-03-07T22:19:53.447205048Z",
-                    "history": [
-                        ...
+                "os": "linux",
+                "rootfs": {
+                    "diff_ids": [
+                        "sha256:..."
                     ],
-                    "os": "linux",
-                    "rootfs": {
-                        "diff_ids": [
-                            "sha256:..."
-                        ],
-                        "type": "layers"
-                    }
-                },
-                "DropCapabilities": [],
-                "FromImage": "...",
-                "FromImageDigest": "sha256:...",
-                "FromImageID": "...",
-                "History": [
-                    ...
-                ],
-                "IDMappingOptions": {
-                    "GIDMap": [],
-                    "HostGIDMapping": true,
-                    "HostUIDMapping": true,
-                    "UIDMap": []
-                },
-                "ImageAnnotations": null,
-                "ImageCreatedBy": "",
-                "Isolation": "IsolationOCIRootless",
-                "Manifest": "{\n   \"schemaVersion\": 2,\n   ...}",
-                "MountLabel": "system_u:object_r:svirt_sandbox_file_t:s0:c295,c943",
-                "MountPoint": "",
-                "NamespaceOptions": [
-                    {
-                        "Host": true,
-                        "Name": "cgroup",
-                        "Path": ""
-                    },
-                    {
-                        "Host": false,
-                        "Name": "ipc",
-                        "Path": ""
-                    },
-                    {
-                        "Host": false,
-                        "Name": "mount",
-                        "Path": ""
-                    },
-                    {
-                        "Host": true,
-                        "Name": "network",
-                        "Path": ""
-                    },
-                    {
-                        "Host": false,
-                        "Name": "pid",
-                        "Path": ""
-                    },
-                    {
-                        "Host": true,
-                        "Name": "user",
-                        "Path": ""
-                    },
-                    {
-                        "Host": false,
-                        "Name": "uts",
-                        "Path": ""
-                    }
-                ],
-                "OCIv1": {
-                    "architecture": "amd64",
-                    "config": {
-                        "Cmd": [
-                            "/bin/sh"
-                        ],
-                        "Env": [
-                            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-                        ]
-                    },
-                    "created": "2019-03-07T22:19:53.447205048Z",
-                    "history": [
-                        ...
-                    ],
-                    "os": "linux",
-                    "rootfs": {
-                        "diff_ids": [
-                            "sha256:..."
-                        ],
-                        "type": "layers"
-                    }
-                },
-                "ProcessLabel": "system_u:system_r:svirt_lxc_net_t:s0:c295,c943",
-                "Type": "buildah 0.0.1"
+                    "type": "layers"
+                }
             },
-            "failed": false,
-            "stderr": "",
-            "stderr_lines": [],
-            "stdout": "container2\n",
-            "stdout_lines": [
-                "container2"
-            ]
-        }'
-    }
+            "DropCapabilities": [],
+            "FromImage": "...",
+            "FromImageDigest": "sha256:...",
+            "FromImageID": "...",
+            "History": [
+                ...
+            ],
+            "IDMappingOptions": {
+                "GIDMap": [],
+                "HostGIDMapping": true,
+                "HostUIDMapping": true,
+                "UIDMap": []
+            },
+            "ImageAnnotations": null,
+            "ImageCreatedBy": "",
+            "Isolation": "IsolationOCIRootless",
+            "Manifest": "{\n   \"schemaVersion\": 2,\n   ...}",
+            "MountLabel": "system_u:object_r:svirt_sandbox_file_t:s0:c295,c943",
+            "MountPoint": "",
+            "NamespaceOptions": [
+                {
+                    "Host": true,
+                    "Name": "cgroup",
+                    "Path": ""
+                },
+                {
+                    "Host": false,
+                    "Name": "ipc",
+                    "Path": ""
+                },
+                {
+                    "Host": false,
+                    "Name": "mount",
+                    "Path": ""
+                },
+                {
+                    "Host": true,
+                    "Name": "network",
+                    "Path": ""
+                },
+                {
+                    "Host": false,
+                    "Name": "pid",
+                    "Path": ""
+                },
+                {
+                    "Host": true,
+                    "Name": "user",
+                    "Path": ""
+                },
+                {
+                    "Host": false,
+                    "Name": "uts",
+                    "Path": ""
+                }
+            ],
+            "OCIv1": {
+                "architecture": "amd64",
+                "config": {
+                    "Cmd": [
+                        "/bin/sh"
+                    ],
+                    "Env": [
+                        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                    ]
+                },
+                "created": "2019-03-07T22:19:53.447205048Z",
+                "history": [
+                    ...
+                ],
+                "os": "linux",
+                "rootfs": {
+                    "diff_ids": [
+                        "sha256:..."
+                    ],
+                    "type": "layers"
+                }
+            },
+            "ProcessLabel": "system_u:system_r:svirt_lxc_net_t:s0:c295,c943",
+            "Type": "buildah 0.0.1"
+        },
+        "failed": false,
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "container2\n",
+        "stdout_lines": [
+            "container2"
+        ]
+    }'
 """
 
 from ansible.module_utils.basic import AnsibleModule  # noqa: E402

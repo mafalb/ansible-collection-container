@@ -3,9 +3,9 @@ default_context:
   author_email: markus.falb@mafalb.at
   author_name: Markus Falb
   collection: mafalb.containers
-  collection_name: container
-  destdir: container
+  collection_name: containers
+  destdir: containers
   hosted_by: github
   license: GPL-3.0-or-later
   namespace: mafalb
-  repository_url: https://github.com/mafalb/ansible-collection-container
+  repository_url: https://github.com/mafalb/ansible-collection-containers

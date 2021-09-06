@@ -7,7 +7,7 @@
 namespace: mafalb
 
 # The name of the collection. Has the same character restrictions as 'namespace'
-name: container
+name: containers
 
 # The version of the collection. Must be compatible with semantic versioning
 version: 0.0.1
@@ -24,7 +24,7 @@ authors:
 ### OPTIONAL but strongly recommended
 
 # A short summary description of the collection
-description: Ansible collection mafalb.container
+description: Ansible collection mafalb.containers
 
 # Either a single license or a list of licenses for content inside of a collection. Ansible Galaxy currently only
 # accepts L(SPDX,https://spdx.org/licenses/) licenses. This key is mutually exclusive with 'license_file'
@@ -43,16 +43,16 @@ tags:
 dependencies: {}
 
 # The URL of the originating SCM repository
-repository: https://github.com/mafalb/ansible-collection-container
+repository: https://github.com/mafalb/ansible-collection-containers
 
 # The URL to any online docs
-documentation: https://github.com/mafalb/ansible-collection-container
+documentation: https://github.com/mafalb/ansible-collection-containers
 
 # The URL to the homepage of the collection/project
-homepage: https://github.com/mafalb/ansible-collection-container
+homepage: https://github.com/mafalb/ansible-collection-containers
 
 
 # The URL to the collection issue tracker
-issues: https://github.com/mafalb/ansible-collection-container/issues
+issues: https://github.com/mafalb/ansible-collection-containers/issues
 
 ...

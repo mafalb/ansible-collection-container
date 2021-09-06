@@ -8,13 +8,13 @@
   tasks:
 
   - name: a rocky 8 container is present
-    mafalb.container.buildah_container:
+    mafalb.containers.buildah_container:
       name: rocky_container
       image: quay.io/rockylinux/rockylinux:8
       state: present
 
   - name: a preexisting rocky 8 container is absent
-    mafalb.container.buildah_container:
+    mafalb.containers.buildah_container:
       name: preexisting_rocky_container
       state: absent
 

@@ -111,7 +111,6 @@
 
     # the following should not change
     - name: cap_drop has precendence over cap_add
-      when: false
       mafalb.container.buildah_container:
         name: container
         image: alpine:3.7
@@ -122,7 +121,6 @@
       register: image
 
     - name: Check idempotency
-      when: false
       assert:
         that:
           - image is not changed

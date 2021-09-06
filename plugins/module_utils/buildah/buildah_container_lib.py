@@ -108,9 +108,9 @@ class BuildahModuleParams:
         Returns:
            list -- list of byte strings for Popen command
         """
-        if self.action in ['start', 'stop', 'delete', 'restart']:
+        if self.action in ['delete']:
             return self.start_stop_delete()
-        if self.action in ['create', 'run']:
+        if self.action in ['create']:
             cmd = ['--name', self.params['name']]
             all_param_methods = [func for func in dir(self)
                                  if callable(getattr(self, func))
@@ -132,7 +132,7 @@ class BuildahModuleParams:
 
     def start_stop_delete(self):
 
-        if self.action in ['stop', 'start', 'restart']:
+        if self.action in ['restart']:
             cmd = [self.action, self.params['name']]
             return [to_bytes(i, errors='surrogate_or_strict') for i in cmd]
 
@@ -334,6 +334,7 @@ class BuildahContainerDiff:
             before = (self.info['defaultcapabilities']
                       + [cap for cap in self.info['addcapabilities']
                       if cap not in self.info['dropcapabilities']])
+            self.module.log("BUILDAH-CONTAINER: capabilities before: %s", before)
         before = [i.lower() for i in before]
         after = []
         if self.module_params['cap_add'] is not None:
@@ -490,16 +491,6 @@ class BuildahContainer:
                     diffs['after'].items())]) + "\n"
         return is_different
 
-    @property
-    def running(self):
-        """Return True if container is running now."""
-        return self.exists and self.info['State']['Running']
-
-    @property
-    def stopped(self):
-        """Return True if container exists and is not running now."""
-        return self.exists and not self.info['State']['Running']
-
     def get_info(self):
         """Inspect container and gather info about it."""
         # pylint: disable=unused-variable
@@ -543,7 +534,7 @@ class BuildahContainer:
             self.module.log(
                 "BUILDAH-CONTAINER-DEBUG (check_mode): %s" % full_cmd)
         else:
-            self.module.log("BUILDAH-CONTAINER-DEBUG: %s" % full_cmd)
+            self.module.log("BUILDAH-CONTAINER-DEBUG 1: %s" % full_cmd)
             rc, out, err = self.module.run_command(
                 [self.module_params['executable']] + b_command,
                 expand_user_and_vars=False)
@@ -559,25 +550,9 @@ class BuildahContainer:
                     msg="Can't %s container %s" % (action, self.name),
                     stdout=out, stderr=err)
 
-    def run(self):
-        """Run the container."""
-        self._perform_action('run')
-
     def delete(self):
         """Delete the container."""
         self._perform_action('delete')
-
-    def stop(self):
-        """Stop the container."""
-        self._perform_action('stop')
-
-    def start(self):
-        """Start the container."""
-        self._perform_action('start')
-
-    def restart(self):
-        """Restart the container."""
-        self._perform_action('restart')
 
     def create(self):
         """Create the container."""
@@ -585,17 +560,8 @@ class BuildahContainer:
 
     def recreate(self):
         """Recreate the container."""
-        if self.running:
-            self.stop()
         self.delete()
         self.create()
-
-    def recreate_run(self):
-        """Recreate and run the container."""
-        if self.running:
-            self.stop()
-        self.delete()
-        self.run()
 
 
 class BuildahManager:
@@ -647,107 +613,27 @@ class BuildahManager:
         if self.module.params['debug'] or self.module_params['debug']:
             self.results.update({'buildah_version': self.container.version})
 
-    def make_started(self):
-        """Run actions if desired state is 'started'."""
-        if not self.image:
-            if not self.container.exists:
-                self.module.fail_json(msg='Cannot start container when image'
-                                          ' is not specified!')
-            if self.restart:
-                self.container.restart()
-                self.results['actions'].append('restarted %s' %
-                                               self.container.name)
-            else:
-                self.container.start()
-                self.results['actions'].append('started %s' %
-                                               self.container.name)
-            self.update_container_result()
-            return
-        if self.container.exists and self.restart:
-            if self.container.running:
-                self.container.restart()
-                self.results['actions'].append('restarted %s' %
-                                               self.container.name)
-            else:
-                self.container.start()
-                self.results['actions'].append('started %s' %
-                                               self.container.name)
-            self.update_container_result()
-            return
-        if self.container.running and \
-                (self.container.different or self.recreate):
-            self.container.recreate_run()
-            self.results['actions'].append('recreated %s' %
-                                           self.container.name)
-            self.update_container_result()
-            return
-        elif self.container.running and not self.container.different:
-            if self.restart:
-                self.container.restart()
-                self.results['actions'].append('restarted %s' %
-                                               self.container.name)
-                self.update_container_result()
-                return
-            self.update_container_result(changed=False)
-            return
-        elif not self.container.exists:
-            self.container.run()
-            self.results['actions'].append('started %s' % self.container.name)
-            self.update_container_result()
-            return
-        elif self.container.stopped and self.container.different:
-            self.container.recreate_run()
-            self.results['actions'].append('recreated %s' %
-                                           self.container.name)
-            self.update_container_result()
-            return
-        elif self.container.stopped and not self.container.different:
-            self.container.start()
-            self.results['actions'].append('started %s' % self.container.name)
-            self.update_container_result()
-            return
-
     def make_created(self):
         """Run actions if desired state is 'created'."""
         if not self.container.exists and not self.image:
             self.module.fail_json(msg='Cannot create container when image'
                                       ' is not specified!')
         if not self.container.exists:
+            self.module.log("BUILDAH-CONTAINER: container does not exist")
             self.container.create()
             self.results['actions'].append('created %s' % self.container.name)
             self.update_container_result()
             return
         else:
+            self.module.log("BUILDAH-CONTAINER: container does exist")
             if (self.container.different):
+                self.module.log("BUILDAH-CONTAINER: recreate %s", self.container.name)
                 self.container.recreate()
                 self.results['actions'].append('recreated %s' %
                                                self.container.name)
-                if self.container.running:
-                    self.container.start()
-                    self.results['actions'].append('started %s' %
-                                                   self.container.name)
                 self.update_container_result()
                 return
             self.update_container_result(changed=False)
-            return
-
-    def make_stopped(self):
-        """Run actions if desired state is 'stopped'."""
-        if not self.container.exists and not self.image:
-            self.module.fail_json(msg='Cannot create container when image'
-                                      ' is not specified!')
-        if not self.container.exists:
-            self.container.create()
-            self.results['actions'].append('created %s' % self.container.name)
-            self.update_container_result()
-            return
-        if self.container.stopped:
-            self.update_container_result(changed=False)
-            return
-        elif self.container.running:
-            self.container.stop()
-            self.results['actions'].append('stopped %s' % self.container.name)
-            self.update_container_result()
             return
 
     def make_absent(self):

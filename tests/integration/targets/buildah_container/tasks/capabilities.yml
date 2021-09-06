@@ -1,0 +1,176 @@
+---
+
+- name: Test buildah_container with capabilities
+  block:
+    - name: Delete all container leftovers from tests
+      mafalb.container.buildah_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "container"
+        - "container2"
+
+    - name: container with additional capabilities is created
+      mafalb.container.buildah_container:
+        name: container
+        image: alpine:3.7
+        cap_add:
+        - CAP_SYS_ADMIN
+      register: image
+
+    - name: Check container with additional capabilities
+      assert:
+        that:
+          - image is changed
+          - image.container is defined
+          - image.container['Capabilities'] is defined or
+            image.container['AddCapabilities'] is defined
+          - "'created container' in image.actions"
+          - "'CAP_SYS_ADMIN' in image.container['Capabilities']|default([]) or
+            'CAP_SYS_ADMIN' in image.container['AddCapabilities']"
+        success_msg: CAP_SYS_ADMIN capability is present
+
+    - name: Idempotency
+      mafalb.container.buildah_container:
+        name: container
+        image: alpine:3.7
+        cap_add:
+        - CAP_SYS_ADMIN
+      register: image
+
+    - name: Check idempotency
+      assert:
+        that:
+          - image is not changed
+          - image.actions == []
+          - image.container is defined
+          - image.container['Capabilities'] is defined or
+            image.container['AddCapabilities'] is defined
+          - "'CAP_SYS_ADMIN' in image.container['Capabilities']|default([]) or
+            'CAP_SYS_ADMIN' in image.container['AddCapabilities']"
+        success_msg: idempotency check successful
+        fail_msg: idempotency check successful
+
+    - name: container with additional capabilities removed
+      mafalb.container.buildah_container:
+        name: container
+        image: alpine:3.7
+        cap_drop:
+        - CAP_SYS_ADMIN
+      register: image
+
+    - name: Check container with additional capabilities removed
+      assert:
+        that:
+          - image is changed
+          - image.container is defined
+          - image.container['Capabilities'] is defined or
+            image.container['AddCapabilities'] is defined
+          - "'recreated container' in image.actions"
+          - "'CAP_SYS_ADMIN' not in image.container['Capabilities']|default([]) and
+            'CAP_SYS_ADMIN' not in image.container['AddCapabilities']|default([])"
+        success_msg: CAP_SYS_ADMIN capability is not present
+
+    # SYS_ADMIN instead of CAP_SYS_ADMIN
+    - name: Idempotency
+      mafalb.container.buildah_container:
+        name: container
+        image: alpine:3.7
+        cap_drop:
+        - SYS_ADMIN
+      register: image
+
+    - name: Check Idempotency
+      assert:
+        that:
+          - image is not changed
+          - image.actions == []
+          - image.container is defined
+          - image.container['Capabilities'] is defined or
+            image.container['AddCapabilities'] is defined
+          - "'CAP_SYS_ADMIN' not in image.container['Capabilities']|default([]) and
+            'CAP_SYS_ADMIN' not in image.container['AddCapabilities']|default([])"
+        success_msg: idempotency check successful
+        fail_msg: idempotency check failed
+
+    - name: Idempotency
+      mafalb.container.buildah_container:
+        name: container
+        image: alpine:3.7
+      register: image
+
+    - name: Check idempotency
+      assert:
+        that:
+          - image is not changed
+          - image.actions == []
+          - image.container is defined
+          - "'CAP_SYS_ADMIN' not in image.container['Capabilities']|default([]) and
+            'CAP_SYS_ADMIN' not in image.container['AddCapabilities']|default([])"
+        success_msg: idempotency test successful
+        fail_msg: idempotency test failed
+
+    - name: cap_drop and cap_add at the same time
+      block:
+      - name: cap_drop has precendence over cap_add
+        mafalb.container.buildah_container:
+          name: container
+          image: alpine:3.7
+          cap_add:
+          - CAP_SYS_ADMIN
+          cap_drop:
+          - CAP_SYS_ADMIN
+        register: image
+      rescue:
+      - name: debug
+        debug:
+          var: image
+      - name: Check for correct error message
+        assert:
+          that:
+            image.msg is search("cannot be dropped and added!")
+
+    - name: Check that it failed
+      assert:
+        that:
+          - image is not changed
+          - image is failed
+        success_msg: container failed
+        fail_msg: container was successful
+
+    # todo: SYS_ADMIN without CAP_ !
+    # capabilities instead of cap_add !
+    - name: container with additional capabilities is created (alias)
+      mafalb.container.buildah_container:
+        name: container
+        image: alpine:3.7
+        capabilities:
+        - SYS_ADMIN
+      register: image
+
+    - name: Check container with additional capabilities (alias)
+      assert:
+        that:
+          - image is changed
+          - image.container is defined
+          - image.container['Capabilities'] is defined or
+            image.container['AddCapabilities'] is defined
+          - "'recreated container' in image.actions"
+          - "'CAP_SYS_ADMIN' in image.container['Capabilities']|default([]) or
+            'CAP_SYS_ADMIN' in image.container['AddCapabilities']"
+        success_msg: CAP_SYS_ADMIN capability is present
+        fail_msg: CAP_SYS_ADMIN capability is not present
+
+  always:
+    - name: debug
+      debug:
+        var: image
+    - name: Delete all container leftovers from tests
+      mafalb.container.buildah_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "container"
+        - "container2"
+
+...

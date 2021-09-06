@@ -133,12 +133,13 @@
         success_msg: idempotency test successful
         fail_msg: idemotency test failed
 
+    # todo: SYS_ADMIN without CAP_
     - name: container with additional capabilities is created (alias)
       mafalb.container.buildah_container:
         name: container
         image: alpine:3.7
         capabilities:
-        - SYS_ADMIN
+        - CAP_SYS_ADMIN
       register: image
 
     - name: Check container with additional capabilities (alias)

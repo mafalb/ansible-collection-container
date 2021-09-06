@@ -1,7 +1,6 @@
 ---
 
 - name: Test image
-  when: false
   include_tasks: image.yml
 
 - name: Test capabilities

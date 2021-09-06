@@ -1,4 +1,4 @@
-# Ansible Collection - mafalb.container
+# Ansible Collection - mafalb.containers
 
 
 |||
@@ -7,11 +7,11 @@
 |dev|![dev branch](https://github.com/mafalb/ansible-collection-container/workflows/CI/badge.svg?branch=dev)|
 
 
-Ansible collection mafalb.container
+Ansible collection mafalb.containers
 
 ## Modules
 
-### mafalb.container.buildah_container
+### mafalb.containers.buildah_container
 
 ## License
 

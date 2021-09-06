@@ -3,7 +3,7 @@
 - name: Test buildah_container with capabilities
   block:
     - name: Delete all container leftovers from tests
-      mafalb.container.buildah_container:
+      mafalb.containers.buildah_container:
         name: "{{ item }}"
         state: absent
       loop:
@@ -11,7 +11,7 @@
         - "container2"
 
     - name: container with additional capabilities is created
-      mafalb.container.buildah_container:
+      mafalb.containers.buildah_container:
         name: container
         image: alpine:3.7
         cap_add:
@@ -31,7 +31,7 @@
         success_msg: CAP_SYS_ADMIN capability is present
 
     - name: Idempotency
-      mafalb.container.buildah_container:
+      mafalb.containers.buildah_container:
         name: container
         image: alpine:3.7
         cap_add:
@@ -52,7 +52,7 @@
         fail_msg: idempotency check successful
 
     - name: container with additional capabilities removed
-      mafalb.container.buildah_container:
+      mafalb.containers.buildah_container:
         name: container
         image: alpine:3.7
         cap_drop:
@@ -73,7 +73,7 @@
 
     # SYS_ADMIN instead of CAP_SYS_ADMIN
     - name: Idempotency
-      mafalb.container.buildah_container:
+      mafalb.containers.buildah_container:
         name: container
         image: alpine:3.7
         cap_drop:
@@ -94,7 +94,7 @@
         fail_msg: idempotency check failed
 
     - name: Idempotency
-      mafalb.container.buildah_container:
+      mafalb.containers.buildah_container:
         name: container
         image: alpine:3.7
       register: image
@@ -113,7 +113,7 @@
     - name: cap_drop and cap_add at the same time
       block:
       - name: cap_drop has precendence over cap_add
-        mafalb.container.buildah_container:
+        mafalb.containers.buildah_container:
           name: container
           image: alpine:3.7
           cap_add:
@@ -141,7 +141,7 @@
     # todo: SYS_ADMIN without CAP_ !
     # capabilities instead of cap_add !
     - name: container with additional capabilities is created (alias)
-      mafalb.container.buildah_container:
+      mafalb.containers.buildah_container:
         name: container
         image: alpine:3.7
         capabilities:
@@ -166,7 +166,7 @@
       debug:
         var: image
     - name: Delete all container leftovers from tests
-      mafalb.container.buildah_container:
+      mafalb.containers.buildah_container:
         name: "{{ item }}"
         state: absent
       loop:

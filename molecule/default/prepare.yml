@@ -7,7 +7,7 @@
 
   tasks:
   - name: create a rocky container
-    mafalb.container.buildah_container:
+    mafalb.containers.buildah_container:
       name: preexisting_rocky_container
       image: quay.io/rockylinux/rockylinux:8
       state: present
